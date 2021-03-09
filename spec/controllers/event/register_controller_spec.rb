@@ -138,6 +138,16 @@ describe Event::RegisterController do
         is_expected.to redirect_to(new_group_event_participation_path(group, event))
         expect(flash[:notice]).to include 'Deine persönlichen Daten wurden aufgenommen. Bitte ergänze nun noch die Angaben'
       end
+
+      it 'sets session timeout to ten minutes' do
+        event.update!(required_contact_attrs: [])
+
+        expect do
+          put :register, params: { group_id: group.id, id: event.id, event_participation_contact_data: { first_name: 'barney', last_name: 'foo', email: 'not-existing@example.com' } }
+        end.to change { Person.count }.by(1)
+
+        expect(response.request.env['rack.session']['valid_for']).to eq(10.minutes)
+      end
     end
 
     context 'with honeypot filled' do

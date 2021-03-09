@@ -10,9 +10,9 @@ class EventAbility < AbilityDsl::Base
   include AbilityDsl::Constraints::Event
 
   on(Event) do
-    class_side(:list_available, :typeahead).everybody
+    class_side(:list_available, :typeahead, :show).with_any_roles
 
-    permission(:any).may(:show).all
+    permission(:any).may(:show).if_external_applications_enabled
     permission(:any).may(:index_participations).
       for_participations_read_events_and_course_participants
     permission(:any).may(:update).for_leaded_events
@@ -66,6 +66,10 @@ class EventAbility < AbilityDsl::Base
     return for_participations_read_events unless subject.is_a?(::Event::Course)
 
     for_participations_read_events || participant?
+  end
+
+  def if_external_applications_enabled
+    event.external_applications?
   end
 
   private

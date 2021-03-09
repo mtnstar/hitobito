@@ -40,6 +40,7 @@ class Event::RegisterController < ApplicationController
     if save_entry
       sign_in(:person, entry.person)
       flash[:notice] = translate(:registered)
+      session[:valid_for] = 10.minutes
       redirect_to new_group_event_participation_path(group, event)
     else
       render 'register'

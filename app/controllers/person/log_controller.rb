@@ -32,7 +32,12 @@ class Person::LogController < ApplicationController
   end
 
   def person
-    @person ||= group.people.find(params[:id])
+    @person ||= if current_user.roles.present? 
+                  group.people.find(params[:id])
+                else
+                  group
+                  Person.find(params[:id])
+                end
   end
 
   def group

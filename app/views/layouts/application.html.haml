@@ -23,7 +23,7 @@
 
     = yield(:head)
 
-  %body{class: ('is-logged-out' unless current_user) }
+  %body{class: ('is-logged-out' unless current_user && current_user.roles.present?) }
     #modal-placeholder
     %main
       = render 'layouts/file_download' if current_user
@@ -36,13 +36,17 @@
 
     #page
       - if current_user
-        %nav.nav-left
-          = render 'layouts/nav'
+        - if current_user.roles.present?
+          %nav.nav-left
+            = render 'layouts/nav'
       .container-fluid
         #page-header
           - if current_user
             = link_to(icon('bars') + t('navigation.menu'), '#', class: 'toggle-nav visible-phone')
-            = render 'layouts/quicksearch'
+            - if current_user.roles.present?
+              = render 'layouts/quicksearch'
+            - else
+              = render 'layouts/languages'
             = link_to current_user, person_home_path(current_user), class: 'hidden-phone'
             = link_to t('layouts.nav.sign_out'), sign_out_path, method: "delete", class: 'hidden-phone'
           - elsif current_user.nil? # nil without login, false on error

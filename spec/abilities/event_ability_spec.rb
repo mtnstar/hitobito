@@ -822,4 +822,24 @@ describe EventAbility do
     end
   end
 
+  context 'as person without roles' do
+    let(:person_without_roles) do
+      person = Fabricate(Person.name.downcase.to_sym)
+      person.update!(primary_group: groups(:top_layer))
+      person
+    end
+    subject { Ability.new(person_without_roles) }
+
+    it 'may show if external applications enabled' do
+      is_expected.to be_able_to(:show, events(:top_course))
+    end
+
+    it 'may not show if external applications disabled' do
+      is_expected.to_not be_able_to(:show, events(:top_event))
+    end
+
+    it 'may not list_available' do
+      is_expected.to_not be_able_to(:list_available, Event)
+    end
+  end
 end
